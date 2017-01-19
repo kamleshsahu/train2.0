@@ -1,0 +1,219 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>live status</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="jquery.typeahead.css">
+
+    <style>
+        /* Extra styles to adjust Typeahead */
+        .typeahead__container {
+            max-width:350px;
+
+            float:left;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js">
+        // <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <!--script src="../dist/jquery.typeahead.min.js"></script-->
+    <script src="jquery.typeahead.js"></script>
+    <script src="trainnamewithno.js"></script>
+    <script src="keypack.js"></script>
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="alignment: left"></span></a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class=" navbar-collapse" id="bs-example-navbar-collapse-1">
+            <form id="form" class="navbar-form ">
+                <div class="typeahead__container">
+                    <div  class="typeahead__field">
+
+                        <span class="typeahead__query">
+                            <input class="js-typeahead-input1"
+                                   id="train_no"
+                                   type="search"
+                                   placeholder="Train No /Train Name"
+                                   autofocus
+                                   autocomplete="off">
+
+                        </span>
+
+
+
+                        <span class="typeahead__button">
+                            <button class="btn btn-default" type="submit" id="submit">
+                                <span class="typeahead__search-icon"></span>
+                            </button>
+                        </span>
+
+
+                    </div>
+                </div></form></div></div></nav>
+
+<script>
+var train_no="";
+var train_name="";
+var w="";
+console.log("script is working!!!");
+    typeof $.typeahead === 'function' && $.typeahead({
+        input: ".js-typeahead-input1",
+        minLength: 1,
+        maxItem: 15,
+        //order: "asc",
+        hint: true,
+        offset:false,
+//         backdrop: {
+//             "background-color": "#fff"
+//         },
+
+        // emptyTemplate: 'No result for "{{query}}"',
+        source: datam,
+        callback: {
+            onClickAfter: function (node, a, item, event) {
+
+                // href key gets added inside item from options.href configuration
+                // alert(item.href);
+
+             console.log(item.display);
+                var res = item.display.match(/\(([^)]+)\)/);
+                console.log(res[1]);
+                train_no=res[1];
+                if(!train_no=="") {
+                    getdata();
+                }
+
+            }
+        },
+        debug: true
+    });
+
+
+    $("#submit").click(function(){getdata()});
+    function getdata(){
+        event.preventDefault();
+        var data="<table class=\"table table-striped \"> <thead> <tr> <th>S.No:</th><th>Station</th> <th>Sch. Arrival/<br>Actual Arrival</th> <th>Sch. Departure/<br>Actual Departure</th><th>Delay</th></tr> </thead> </tbody>";
+
+            console.log("submit button is working!!!");
+
+            $("#div1").html("<h1>                 Loading.......</h1>");
+
+            console.log("submit form is working bro");
+
+        var d = new Date();
+        var day=d.getDay();
+
+        traindays(train_no,day,function (dateback) {
+
+
+            console.log("Here is the dayback:"+dateback);
+            var date=d.getDate()-dateback;
+            if (date<10){
+                date="0"+date;
+            }
+            var month=d.getMonth()+1;
+            if(month<10){
+                month="0"+month;
+            }
+
+            var datef =  d.getFullYear()+""+(month)+""+(date);
+        var url="http://api.railwayapi.com/live/train/"+train_no+"/doj/"+datef+"/apikey/"+key[keyno]+"/";
+      // var url= "http://api.railwayapi.com/route/train/"+train_no+"/apikey/gzg3pcc2/";
+         //   var url='http://api.railwayapi.com/between/source/'+src+'/dest/'+dst+'/date/16-12/apikey/4ywa4l49/';
+            $.get(url, function(body, status){
+
+                var trainposition="<h4 strong><span id=\"trainname\" style=\"color:midnightblue\"></span></h4><h5>Current Position :</strong><p style=\"color:red\">"+body.position+"</p></h5>";
+                $("#div0").html(trainposition);
+                $("#trainname").html(train_name+" ("+train_no+")");
+                body.route.forEach(function (route){
+                    data += "<tr><td>" + route.no + "</td><td> " + route.station_.name + "</td><td>" + route.scharr+"<br><pp style=\"color:red\">"+route.actarr+ " </pp></td><td>" + route.schdep +"<br><pp style=\"color:red\">"+route.actdep+ "</pp></td><td><pp style=\"color:red\">" +route.latemin+ " min</pp></td></tr>";
+                });
+
+
+                $("#div1").html(data);
+
+                console.log("get function is working correctly");
+            });
+
+      });
+    }
+function traindays (train_no,day,dayback) {
+    var count=0;
+    var gottheday=false;
+    var url= "http://api.railwayapi.com/route/train/"+train_no+"/apikey/"+key[keyno]+"/";
+    $.get(url, function(body, status){
+            console.log("yeh traindays is working!!!" );
+            var dor=[];
+            var k=0;
+
+            console.log("Train Name:"+body.train.name);
+            console.log("Train No:"+body.train.number);
+            train_name=body.train.name;
+            body.train.days.forEach(function (day)
+            {
+
+                dor[k]=day.runs;
+                k++;
+            });
+console.log(w);
+            for(var k=day;k>=0;k--) {
+                if(dor[k]=="Y"){
+                    dayback(count);
+                    gottheday=true;
+                    console.log("yehh got the day:"+count);
+                    break;
+                }else{
+                    count++;
+
+                }
+            }
+            if(gottheday==false){
+                for(var k=6;k>day;k--){
+                    if(dor[k]=="Y"){
+                        dayback(count);
+                        gottheday=true;
+                        break;
+                    }else{
+                        count++;
+                    }
+                }
+
+            }
+            console.log(dor);
+            console.log("Here is the dayback:"+count);
+
+
+
+    });
+
+}
+
+
+</script>
+
+<div id="div0" class="container"></div>
+<div id="div1" class="container"></div>
+
+</body>
+</html>

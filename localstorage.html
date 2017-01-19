@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="jquery.js"></script>
+</head>
+<body>
+<script>
+    var data=["kamlesh","bhupesh","nilesh"];
+    function storinglocally() {
+        if (typeof(Storage) !== "undefined") {
+            // Code for localStorage/sessionStorage.
+            //console.log("storage is defined!!!");
+            if (localStorage.mydata) {
+                console.log("my data is created already..");
+                var retriveddata=localStorage.getItem("mydata");
+                var retriveddataparsed=JSON.parse(retriveddata);
+                retriveddataparsed.push($("#input").val());
+                localStorage.mydata=JSON.stringify(retriveddataparsed);
+            } else {
+                console.log("creating local storage");
+                localStorage.mydata = JSON.stringify(data);
+            }
+        } else {
+
+            console.log("sorry no storage support");
+            // Sorry! No Web Storage support..
+        }
+    }
+    function get_localdata() {
+        var fetchdata =localStorage.getItem("mydata");
+       var fetchdata2=JSON.parse(fetchdata);
+       try {
+           console.log(fetchdata2[fetchdata2.length-1]);
+           $("#div4").html(fetchdata2[fetchdata2.length-1]);
+       }catch(error){
+           console.log(" here is the bug 2 :"+error);
+       }
+
+        console.log("data taken from input stored in array");
+    }
+    function clear_cache() {
+        localStorage.removeItem("mydata");
+        console.log("cache is cleared!!!");
+    }
+function updated_localdata() {
+        console.log("local storage data requested!!!");
+        try {
+            console.log(localStorage.getItem("mydata"));
+            $("#div3").html(localStorage.mydata);
+        }catch(error){
+            console.log("here is the bug : "+error);
+        }
+
+}
+
+</script>
+<div style="padding: 10px"><input type="text" id="input" placeholder="fill data to store"></div>
+<div style="padding: 10px"><button type="submit" onclick="get_localdata()">fetch last element</button></div>
+<div style="padding: 10px"><button onclick="storinglocally()">store locally</button></div>
+<div style="padding: 10px"><button onclick="updated_localdata()">see local data</button></div>
+<div style="padding: 10px"><button onclick="clear_cache()">clear cache</button></div>
+<div id="div3"></div>
+<div id="div4"></div>
+</body>
+</html>

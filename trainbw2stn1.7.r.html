@@ -1,0 +1,542 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+
+ <title></title>
+ <meta name="description" content="">
+ <meta name="author" content="">
+
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+ <link rel="stylesheet" href="jquery.typeahead.css">
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js">
+     // <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+ <!--script src="../dist/jquery.typeahead.min.js"></script-->
+ <script src="jquery.typeahead.js"></script>
+ <script src="StationNameWithCode.js"></script>
+    <script src="keypack.js"></script>
+    <link rel="stylesheet" type="text/css" href="codebase/fonts/font_roboto/roboto.css"/>
+    <link rel="stylesheet" type="text/css" href="codebase/dhtmlxcalendar.css"/>
+    <script src="codebase/dhtmlxcalendar.js"></script>
+    <style>
+        /* Extra styles to adjust Typeahead */
+        .typeahead__query {
+            max-width:300px;
+
+            float:left;
+        }
+        #date_here {
+            font-family: Roboto, Arial, Helvetica;
+            font-size: 14px;
+            color: #404040;
+        }
+        #calendar_icon {
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        .daten{
+            padding:0px 0px 0px 17px;
+        }
+
+        .line{
+            border-left:10px;
+        }
+        .wrap {
+          text-align: center;
+          vertical-align: middle;
+          margin-bottom: 100px;
+          background: white;
+        }
+
+        .spinner {
+          width: 60px;
+          height: 60px;
+          background: white;
+          border-radius: 50%;
+          position: relative;
+          margin: 50px;
+          display: inline-block;
+        }
+        .spinner:after, .spinner:before {
+          content: "";
+          display: block;
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+        }
+
+        .spinner:after {
+          position: absolute;
+          top: -4px;
+          left: -4px;
+          border: 5px solid transparent;
+          border-bottom-color: rgb(5,0,106);
+          border-top-color:rgb(5,0,106) ;
+          -webkit-animation: spinny .7s linear infinite;
+                  animation: spinny .7s linear infinite;
+        }
+
+        @-webkit-keyframes spinny {
+          0% {
+            -webkit-transform: rotate(0deg) scale(1);
+                    transform: rotate(0deg) scale(1);
+          }
+          50% {
+            -webkit-transform: rotate(45deg) scale(1.2);
+                    transform: rotate(45deg) scale(1.2);
+          }
+          100% {
+            -webkit-transform: rotate(360deg) scale(1);
+                    transform: rotate(360deg) scale(1);
+          }
+        }
+
+        @keyframes spinny {
+          0% {
+            -webkit-transform: rotate(0deg) scale(1);
+                    transform: rotate(0deg) scale(1);
+          }
+          50% {
+            -webkit-transform: rotate(45deg) scale(1.2);
+                    transform: rotate(45deg) scale(1.2);
+          }
+          100% {
+            -webkit-transform: rotate(360deg) scale(1);
+                    transform: rotate(360deg) scale(1);
+          }
+        }
+
+    </style>
+   <script>
+       var date,month,year;
+        var myCalendar;
+        function doOnLoad() {
+            myCalendar = new dhtmlXCalendarObject({button: "calendar_icon"});
+            myCalendar.hideTime();
+            setFrom();
+            myCalendar.attachEvent("onClick",function () {
+                $("#date_here").html(myCalendar.getFormatedDate(' %d %M %Y'));
+                //console.log(myCalendar.getFormatedDate('%d'+"-"+'%m'));
+                date=myCalendar.getFormatedDate('%d');
+                month=myCalendar.getFormatedDate('%m');
+                console.log("calender set :"+date+"-"+month+"-"+year);
+            })
+
+        }
+        function setFrom() {
+            var d = new Date();
+            var date=d.getDate();
+            if (date<10){
+                date="0"+date;
+            }
+            var month=d.getMonth()+1;
+            if(month<10){
+                month="0"+month;
+            }
+
+            var datef =  d.getFullYear()+"-"+(month)+"-"+(date);
+            console.log("todays date is :"+datef);
+            myCalendar.setSensitiveRange(datef,null);
+
+        }
+    </script>
+</head>
+<body onload="doOnLoad();">
+
+
+<nav class="navbar navbar-default">
+ <div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+   <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+           data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+   </button>
+      <a class="navbar-brand" href="index.html"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="alignment: left"></span></a>
+
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class=" navbar-collapse" id="bs-example-navbar-collapse-1">
+   <form id="form" class="navbar-form ">
+    <div class="typeahead__container">
+     <div  class="typeahead__field">
+
+                        <span class="typeahead__query">
+                            <input class="js-typeahead-input1"
+                                   id="src"
+                                   type="search"
+                                   placeholder="source station"
+                                   autofocus
+                                   autocomplete="off">
+
+                        </span>
+     </div></div>
+        <div class="typeahead__container">
+           <div  class="typeahead__field">
+                        <span class="typeahead__query">
+                            <input class="js-typeahead-input2"
+                                   id="dst"
+                                   type="search"
+                                   placeholder="destination station"
+                                   autofocus
+                                   autocomplete="off">
+
+                        </span>
+
+      <span class="typeahead__button">
+                            <button class="btn btn-default" type="submit" id="submit">
+                                <span class="typeahead__search-icon"></span>
+                            </button>
+                        </span>
+
+
+</div>
+    </div></form></div></div>
+
+
+    <!--button function-->
+    <script>
+        $(document).ready(function(k){
+
+            var d = new Date();
+            date = d.getDate();
+            if (date < 10) {
+                date = "0" + date;
+            }
+            month = d.getMonth() + 1;
+            if (month < 10) {
+                month = "0" + month;
+            }
+            year = d.getFullYear();
+            $(".today").click(function(){
+                // $(this).button('toggle');
+
+                $(this).addClass('active').siblings().removeClass('active');
+                $("#date_here").html("");
+                var d = new Date();
+                date = d.getDate();
+                if (date < 10) {
+                    date = "0" + date;
+                }
+                month = d.getMonth() + 1;
+                if (month < 10) {
+                    month = "0" + month;
+                }
+                year = d.getFullYear();
+
+                console.log("today clicked :"+date+"-"+month+"-"+year);
+            });
+            $(".tomorrow").click(function(){
+                // $(this).button('toggle');
+                $(this).addClass('active').siblings().removeClass('active');
+                $("#date_here").html("");
+                var d = new Date();
+                date = d.getDate()+1;
+                if (date < 10) {
+                    date = "0" + date;
+                }
+                month = d.getMonth() + 1;
+                if (month < 10) {
+                    month = "0" + month;
+                }
+                year = d.getFullYear();
+
+                console.log("tomorrow clicked:"+date+"-"+month+"-"+year);
+            });
+            $(".calendaricon").click(function(){
+                $(this).addClass('active').siblings().removeClass('active');
+                // $(this).button('toggle');
+                console.log("calender clicked");
+            });
+
+
+
+        });
+    </script>
+
+    <div class="daten">
+       <span>
+  <div class="btn-group">
+      <button type="button" class="btn btn-primary today active">Today</button>
+      <button type="button" class="btn btn-primary tomorrow">Tomorrow</button>
+    <button type="button" class="btn btn-primary calendaricon"><img src="codebase/icon2.png" border="0" height="20px" id="calendar_icon" ><span style="color:white" id="date_here">&nbsp;</span></button>
+  </div>
+           </span>
+
+    </div>
+</nav>
+
+
+ <script>
+     var src="";
+     var dst="";
+     var train_name="";
+     var sourceno="";
+ var arrivaltime="";
+ var departuretime="";
+ var delaytime="";
+  console.log("script is working!!!");
+     typeof $.typeahead === 'function' && $.typeahead({
+         input: ".js-typeahead-input1",
+         minLength: 1,
+         maxItem: 15,
+         //order: "asc",
+         hint: true,
+         offset:true,
+//         backdrop: {
+//             "background-color": "#fff"
+//         },
+
+        // emptyTemplate: 'No result for "{{query}}"',
+         source: datam,
+         callback: {
+             onClickAfter: function (node, a, item, event) {
+
+                 // href key gets added inside item from options.href configuration
+                // alert(item.href);
+
+
+                 var res = item.display.match(/\(([^)]+)\)/);
+                 console.log(res[1]);
+                 src=res[1];
+                 if(!src=="" && !dst=="") {
+                     getdata();
+                 }
+             }
+         },
+         debug: true
+     });
+     typeof $.typeahead === 'function' && $.typeahead({
+         input: ".js-typeahead-input2",
+         minLength: 1,
+         maxItem: 15,
+         //order: "asc",
+         hint: true,
+         offset:true,
+//         backdrop: {
+//             "background-color": "#fff"
+//         },
+
+         //emptyTemplate: 'No result for "{{query}}"',
+         source: datam,
+         callback: {
+             onClickAfter: function (node, a, item, event) {
+
+                 // href key gets added inside item from options.href configuration
+                 // alert(item.href);
+
+
+                 var res = item.display.match(/\(([^)]+)\)/);
+                 console.log(res[1]);
+                 dst=res[1];
+                   if(!src=="" && !dst=="") {
+                       getdata();
+                   }}
+         },
+         debug: true
+     });
+
+  $("#submit").click(function(){getdata()});
+     function getdata(){
+         event.preventDefault();
+         // alert("submit button is clicked.");
+         if(!src=="" && !dst=="") {
+
+             var count1=0;
+         var data="<table class=\"table table-striped \"> <thead> <tr> <th>No:</th><th>Train</th> <th>Departure Time</th> <th>Arrival Time</th> <th>Delay</th> </tr> </thead> <tbody>";
+
+         console.log("submit button is working!!!");
+//spinner
+         $("#div1").html("<div class='wrap'><div class='spinner'></h1></h1>");
+
+         console.log("submit form is working bro");
+
+         var url="http://api.railwayapi.com/between/source/"+src+"/dest/"+dst+"/date/"+date+"-"+month+"/apikey/"+key[keyno]+"/";
+
+             console.log("calling :"+url);
+         $.get(url, function(body, status) {
+
+
+                 body.train.forEach(function (train) {
+                     data+="<tr class='c"+train.number+"'><td>" + ++count1 + "</td><td id=\""+train.number+"\" onclick='getlivestatus(id)' type=\"text\"  data-toggle=\"modal\" data-target=\"#myModal\" ><a href=\"#\">" + train.name + "<br><strong>" + train.number + "</a></strong></td><td><p id='schdep'>" + train.src_departure_time + "</p><p id='actdep'>"+"</p></td><td>" + train.dest_arrival_time + "</td><td id='delaytime' onclick='traindelaytime("+train.number+")'><button>Delay</button></td></tr>";
+
+                 });
+                 if (count1 <= 1) {
+                     $("#div1").html("<h2><strong>sorry no trains bw these two stations!!!</strong></h2>");
+                 } else {
+                     $("#div1").html(data);
+                 }
+
+                 console.log("all trains for the day is working correctly");
+             });
+
+     }else{
+             $("#div1").html("<strong>Pls fill both the stations to get trains</strong>");
+         }}
+
+     function getlivestatus(train_no){
+         event.preventDefault();
+         var data2="<table class=\"table table-condensed \"> <thead> <tr> <th>no:</th><th>Station</th> <th>Sch. Arrival/<br>Actual Arrival</th> <th>Sch. Departure/<br>Actual Departure</th><th>Delay</th></tr> </thead> </tbody>";
+
+
+         $("#div3").html("<h1 class='spin'>                 Loading.......</h1>");
+         $("#div2").html("");
+         console.log("getlive status for the selected train is working");
+
+
+         trainstartday(train_no,src,function (dateback) {
+
+
+             console.log("Here is the dayback:"+dateback);
+             var afterdateback=date-dateback;
+
+             var datef =  year+""+(month)+""+(afterdateback);
+             var url="http://api.railwayapi.com/live/train/"+train_no+"/doj/"+datef+"/apikey/"+key[keyno]+"/";
+             console.log("calling for live status :"+url);
+             // var url= "http://api.railwayapi.com/route/train/"+train_no+"/apikey/gzg3pcc2/";
+             //   var url='http://api.railwayapi.com/between/source/'+src+'/dest/'+dst+'/date/16-12/apikey/4ywa4l49/';
+             $.get(url, function(body, status){
+                      var currentstationno= body.current_station.no;
+
+
+               if(body.current_station.latemin>0) {
+                   var trainposition = "<h4 strong><span  id=\"trainname\" style=\"color:midnightblue\"></span></h4><h5>Current Position :</strong><p style=\"color:red\">" + body.position + "</p></h5>";
+               }else{
+                   var trainposition = "<h4 strong><span  id=\"trainname\" style=\"color:midnightblue\"></span></h4><h5>Current Position :</strong><p style=\"color:green\">" + body.position + "</p></h5>";
+               }
+               $("#div2").html(trainposition);
+                 $("#trainname").html(train_name+" ("+train_no+")");
+                 body.route.forEach(function (route){
+                     if(route.no<currentstationno) {
+                         if (route.latemin <= 0) {
+                             data2 += "<tr id='"+route.no+"' style='background-color:rgba(164,255,45,0.29)'><td>" + route.no + "</td><td> " + route.station_.name + "</td><td>" + route.scharr + "<br><pp style=\"color:green\">" + route.actarr + " </pp></td><td>" + route.schdep + "<br><pp style=\"color:green\">" + route.actdep + "</pp></td><td><pp style=\"color:green\">" + route.latemin + " min</pp></td></tr>";
+                         }else {
+                             data2 += "<tr id='"+route.no+"' style='background-color:rgba(164,255,45,0.29)'><td>" + route.no + "</td><td> " + route.station_.name + "</td><td>" + route.scharr + "<br><pp style=\"color:red\">" + route.actarr + " </pp></td><td>" + route.schdep + "<br><pp style=\"color:red\">" + route.actdep + "</pp></td><td><pp style=\"color:red\">" + route.latemin + " min</pp></td></tr>";
+                         }
+                     }else if(route.no==currentstationno){
+                             if(route.latemin<=0) {
+                                            data2 += "<tr id='"+route.no+"' style='background-color:rgba(236,255,46,0.29)'><td>" + route.no + "</td><td> " + route.station_.name + "</td><td>" + route.scharr + "<br><pp style=\"color:green\">" + route.actarr + " </pp></td><td>" + route.schdep + "<br><pp style=\"color:green\">" + route.actdep + "</pp></td><td><pp style=\"color:green\">" + route.latemin + " min</pp></td></tr>";
+                                        }else{
+                                            data2 += "<tr id='"+route.no+"' style='background-color:rgba(236,255,46,0.29)'><td>" + route.no + "</td><td> " + route.station_.name + "</td><td>" + route.scharr + "<br><pp style=\"color:red\">" + route.actarr + " </pp></td><td>" + route.schdep + "<br><pp style=\"color:red\">" + route.actdep + "</pp></td><td><pp style=\"color:red\">" + route.latemin + " min</pp></td></tr>";
+
+                                        }
+                         }else{
+                         if(route.latemin<=0) {
+                             data2 += "<tr id='"+route.no+"'><td>" + route.no + "</td><td> " + route.station_.name + "</td><td>" + route.scharr + "<br><pp style=\"color:green\">" + route.actarr + " </pp></td><td>" + route.schdep + "<br><pp style=\"color:green\">" + route.actdep + "</pp></td><td><pp style=\"color:green\">" + route.latemin + " min</pp></td></tr>";
+                         }else{
+                             data2 += "<tr id='"+route.no+"'><td>" + route.no + "</td><td> " + route.station_.name + "</td><td>" + route.scharr + "<br><pp style=\"color:red\">" + route.actarr + " </pp></td><td>" + route.schdep + "<br><pp style=\"color:red\">" + route.actdep + "</pp></td><td><pp style=\"color:red\">" + route.latemin + " min</pp></td></tr>";
+                         }
+                     }
+
+                 });
+
+
+
+                 $("#div3").html(data2);
+
+             });
+
+         });
+     }
+
+function trainstartday(train_no,src,dayback){
+
+
+    var url= "http://api.railwayapi.com/route/train/"+train_no+"/apikey/"+key[keyno]+"/";
+    $.get(url, function(body, status){
+        console.log("yeh trainstartday is working!!!" );
+
+
+        console.log("Train Name:"+body.train.name);
+        console.log("Train No:"+body.train.number);
+        train_name=body.train.name;
+
+
+        body.route.forEach(function(route){
+             if(route.code==src){
+                 console.log("yehh!! found the match :"+src);
+                 console.log("dayback is:"+route.day);
+                 sourceno=route.no;
+                 dayback(route.day-1);
+                 console.log("here is the source no:"+route.no);
+
+             }
+        });
+
+
+
+
+    });
+
+
+}
+     function traindelaytime(train_no){
+         console.log("traindelaytime function is working!!!");
+
+      //   $("#div1").find(id).find("#delaytime").html("<span><img src='images.png' </span>");
+
+
+         trainstartday(train_no,src,function (dateback) {
+
+
+             console.log("Here is the dayback:"+dateback);
+             var afterdateback=date-dateback;
+
+             var datef =  year+""+(month)+""+(afterdateback);
+             var url="http://api.railwayapi.com/live/train/"+train_no+"/doj/"+datef+"/apikey/"+key[keyno]+"/";
+             console.log("calling for live status :"+url);
+             $.get(url, function(body, status){
+                 body.route.forEach(function (route){
+                          if(route.station_.code==src){
+                              console.log("found the source station data for the train!!!");
+
+                              departuretime=route.actdep;
+                              delaytime=route.latemin;
+                              console.log("->"+departuretime+" Delay:"+delaytime);
+                          }
+
+
+                 });
+                 var id=".c"+train_no;
+                $("#div1").find(id).find("#delaytime").html("<span strong style='color: red'>"+delaytime+" min </span>");
+                 $("#div1").find(id).find("#actdep").html("<span strong style='color: red'>"+departuretime+" </span>");
+         });
+     });
+     }
+
+ </script>
+
+
+      <div id="div1" class="container"></div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="div2"></h4>
+            </div>
+            <div class="modal-body">
+                <p id="div3">   </p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title></title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <style>
+        /* Extra styles to adjust Typeahead */
+        .typeahead__container {
+            max-width:400px;
+
+            float:left;
+        }
+    </style>
+
+    <link rel="stylesheet" href="jquery.typeahead.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="jquery.typeahead.js"></script>
+    <script src="StationNameWithCode.js"></script>
+
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="alignment: left"></span></a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class=" navbar-collapse" id="bs-example-navbar-collapse-1">
+            <form id="form" class="navbar-form ">
+                <div class="typeahead__container">
+                    <div  class="typeahead__field">
+
+                        <span class="typeahead__query" >
+                            <input class="js-typeahead-input1"
+                                   id="src"
+                                   type="search"
+                                   placeholder="Station Name"
+                                   autofocus
+                                   autocomplete="off">
+
+                        </span>
+                        <span class="typeahead__button">
+                            <button class="btn btn-default" type="submit" id="submit">
+                                <span class="typeahead__search-icon"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+
+<div >
+                        <!--<span class="typeahead__button">-->
+                            <!--<button class="btn btn-default" type="submit" id="submit">-->
+                                <!--<span class="typeahead__search-icon"></span>-->
+                            <!--</button>-->
+                     <label class="radio-inline">
+                         <input type="radio" name="optradio" id="2"  >2 Hour
+                   </label>
+                     <label class="radio-inline">
+                   <input type="radio" name="optradio" id="4" >4 Hour
+                     </label>
+                        <!--</span>-->
+                            <!--</button>-->
+</div>
+
+                    </form>
+        </div></div></div></nav>
+
+
+<script>
+    var src="";
+    console.log("script is working!!!");
+    typeof $.typeahead === 'function' && $.typeahead({
+        input: ".js-typeahead-input1",
+        minLength: 1,
+        maxItem: 15,
+        //order: "asc",
+        hint: true,
+        offset:true,
+//         backdrop: {
+//             "background-color": "#fff"
+//         },
+
+        // emptyTemplate: 'No result for "{{query}}"',
+        source: datam,
+        callback: {
+            onClickAfter: function (node, a, item, event) {
+
+                // href key gets added inside item from options.href configuration
+                // alert(item.href);
+
+
+                var res = item.display.match(/\(([^)]+)\)/);
+                console.log(res[1]);
+                src=res[1];
+
+
+
+
+                if(!src=="") {
+                    getdata();
+
+                }
+            }
+        },
+        debug: true
+    });
+
+//    $("#4").click(function(){
+    //        var id=$("#4").attr("id");
+    //        console.log(id);
+    //        getdata(id)});
+    //    $("#2").click(function(){
+    //        var id=$("#2").attr("id");
+    //        console.log(id);
+    //        getdata(id)});
+    $("#submit").click(function(){
+        getdata();
+    });
+
+
+    function getdata(hours){
+        event.preventDefault();
+        // alert("submit button is clicked.");
+        if(!src=="") {
+            var count1=0;
+            var data="<table class=\"table table-striped \"> <thead> <tr> <th>S.No:</th><th>Train</th> <th>Arrival Time</th> <th>Departure Time</th> <th>Delay Arr</th></tr> </thead> <tbody>";
+
+            console.log("submit button is working!!!");
+
+            $("#div1").html("<h1>                 Loading.......</h1>");
+
+            console.log("submit form is working bro");
+
+            //src =encodeURIComponent($("#form").find('input[id=src]').val());
+            // dst = encodeURIComponent($("#form").find('input[id=dst]').val());
+
+
+            var url='http://api.railwayapi.com/arrivals/station/'+src+'/hours/'+hours+'/apikey/gzg3pcc2/';
+            $.get(url, function(body, status) {
+
+
+                body.train.forEach(function (train) {
+                    data+="<tr><td>" + ++count1 + "</td><td id=\""+train.number+"\" onclick='getlivestatus(id)' type=\"text\"  data-toggle=\"modal\" data-target=\"#myModal\" ><a href=\"#\">" + train.name + "<br><strong>" + train.number + "</a></strong></td><td>" + train.scharr+"<br>"+train.actarr + " </td><td>" + train.schdep+"<br>"+ train.actdep + "</td><td>"+ train.delayarr+"</td></td></tr>";
+
+                });
+                if (count1 <= 1) {
+                    $("#div1").html("<h2><strong>sorry no trains found for station in next 2 hours!!!</strong></h2>");
+                } else {
+                    $("#div1").html(data);
+                }
+                //  console.log(data);
+                console.log("get function is working correctly");
+            });
+
+        }else{
+            $("#div1").html("<strong>Pls fill the station name to get trains</strong>");
+        }}
+
+    function getlivestatus(train_no){
+        event.preventDefault();
+        var data2="<table class=\"table table-striped \"> <thead> <tr> <th>S.No:</th><th>Station</th> <th>Sch. Arrival/<br>Actual Arrival</th> <th>Sch. Departure/<br>Actual Departure</th><th>Delay</th></tr> </thead> </tbody>";
+
+        console.log("submit button is working!!!");
+        //  $("#div1").hide();
+        $("#div3").html("<h1>                 Loading.......</h1>");
+
+        console.log("getlive status is working");
+        // var train_no=12853;
+        var d = new Date();
+        var day=d.getDay();
+
+        traindays(train_no,day,function (dateback) {
+
+
+            console.log("Here is the dayback:"+dateback);
+            var date=d.getDate()-dateback;
+            if (date<10){
+                date="0"+date;
+            }
+            var month=d.getMonth()+1;
+            if(month<10){
+                month="0"+month;
+            }
+
+            var datef =  d.getFullYear()+""+(month)+""+(date);
+            var url="http://api.railwayapi.com/live/train/"+train_no+"/doj/"+datef+"/apikey/gzg3pcc2/";
+            // var url= "http://api.railwayapi.com/route/train/"+train_no+"/apikey/gzg3pcc2/";
+            //   var url='http://api.railwayapi.com/between/source/'+src+'/dest/'+dst+'/date/16-12/apikey/4ywa4l49/';
+            $.get(url, function(body, status){
+
+                var trainposition="<h4 strong><span  id=\"trainname\" style=\"color:midnightblue\"></span></h4><h5>Current Position :</strong><p style=\"color:red\">"+body.position+"</p></h5>";
+                $("#div2").html(trainposition);
+                $("#trainname").html(train_name+" ("+train_no+")");
+                body.route.forEach(function (route){
+                    data2 += "<tr><td>" + route.no + "</td><td> " + route.station_.name + "</td><td>" + route.scharr+"<br><pp style=\"color:red\">"+route.actarr+ " </pp></td><td>" + route.schdep +"<br><pp style=\"color:red\">"+route.actdep+ "</pp></td><td><pp style=\"color:red\">" +route.latemin+ " min</pp></td></tr>";
+                });
+
+
+                $("#div3").html(data2);
+
+                console.log("get function is working correctly");
+            });
+
+        });
+    }
+    function traindays (train_no,day,dayback) {
+        var count=0;
+        var gottheday=false;
+        var url= "http://api.railwayapi.com/route/train/"+train_no+"/apikey/gzg3pcc2/";
+        $.get(url, function(body, status){
+            console.log("yeh traindays is working!!!" );
+            var dor=[];
+            var k=0;
+
+            console.log("Train Name:"+body.train.name);
+            console.log("Train No:"+body.train.number);
+            train_name=body.train.name;
+            body.train.days.forEach(function (day)
+            {
+
+                dor[k]=day.runs;
+                k++;
+            });
+            //console.log(w);
+            for(var k=day;k>=0;k--) {
+                if(dor[k]=="Y"){
+                    dayback(count);
+                    gottheday=true;
+                    console.log("yehh got the day:"+count);
+                    break;
+                }else{
+                    count++;
+
+                }
+            }
+            if(gottheday==false){
+                for(var k=6;k>day;k--){
+                    if(dor[k]=="Y"){
+                        dayback(count);
+                        gottheday=true;
+                        break;
+                    }else{
+                        count++;
+                    }
+                }
+
+            }
+            console.log(dor);
+            console.log("Here is the dayback:"+count);
+
+
+
+        });
+
+    }
+
+
+
+
+</script>
+
+
+<div id="div1" class="container"></div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="div2"></h4>
+            </div>
+            <div class="modal-body">
+                <p id="div3">   </p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+</body>
+</html>

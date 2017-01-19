@@ -1,0 +1,150 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>train route</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="jquery.typeahead.css">
+
+    <style>
+        /* Extra styles to adjust Typeahead */
+        .typeahead__container {
+            max-width:350px;
+
+            float:left;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js">
+        // <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <!--script src="../dist/jquery.typeahead.min.js"></script-->
+    <script src="jquery.typeahead.js"></script>
+    <script src="trainnamewithno.js"></script>
+
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="alignment: left"></span></a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class=" navbar-collapse" id="bs-example-navbar-collapse-1">
+            <form id="form" class="navbar-form ">
+                <div class="typeahead__container">
+                    <div  class="typeahead__field">
+
+                        <span class="typeahead__query">
+                            <input class="js-typeahead-input1"
+                                   id="train_no"
+                                   type="search"
+                                   placeholder="Train No /Train Name"
+                                   autofocus
+                                   autocomplete="off">
+
+                        </span>
+
+
+
+                        <span class="typeahead__button">
+                            <button class="btn btn-default" type="submit" id="submit">
+                                <span class="typeahead__search-icon"></span>
+                            </button>
+                        </span>
+
+
+                    </div>
+                </div></form></div></div></nav>
+
+<script>
+var train_no="";
+    console.log("script is working!!!");
+    typeof $.typeahead === 'function' && $.typeahead({
+        input: ".js-typeahead-input1",
+        minLength: 1,
+        maxItem: 15,
+        //order: "asc",
+        hint: true,
+        offset:false,
+//         backdrop: {
+//             "background-color": "#fff"
+//         },
+
+        // emptyTemplate: 'No result for "{{query}}"',
+        source: datam,
+        callback: {
+            onClickAfter: function (node, a, item, event) {
+
+                // href key gets added inside item from options.href configuration
+                // alert(item.href);
+
+             console.log(item.display);
+                var res = item.display.match(/\(([^)]+)\)/);
+                console.log(res[1]);
+                train_no=res[1];
+                if(!train_no=="") {
+                    getdata();
+                }
+
+            }
+        },
+        debug: true
+    });
+
+
+    $("#submit").click(function(){getdata()});
+    function getdata(){
+        event.preventDefault();
+        // alert("submit button is clicked.");
+
+          //  var count1=0;
+        var data="<table class=\"table table-striped \"> <thead> <tr> <th>S.No:</th><th>Station</th> <th>Arrival </th> <th>Departure</th><th>Distance</th><th>Day</th></tr> </thead> </tbody>";
+
+            console.log("submit button is working!!!");
+
+            $("#div1").html("<h1>                 Loading.......</h1>");
+
+            console.log("submit form is working bro");
+
+            //src =encodeURIComponent($("#form").find('input[id=src]').val());
+            // dst = encodeURIComponent($("#form").find('input[id=dst]').val());
+
+       var url= "http://api.railwayapi.com/route/train/"+train_no+"/apikey/4ywa4l49/";
+         //   var url='http://api.railwayapi.com/between/source/'+src+'/dest/'+dst+'/date/16-12/apikey/4ywa4l49/';
+            $.get(url, function(body, status){
+
+                body.route.forEach(function (route){
+                    data += "<tr><td>" + route.no + "</td><td> " + route.fullname + "</td><td>" + route.scharr+ " </td><td>" + route.schdep + " </td><td>" +route.distance+ " </td><td>" +route.day+"</td></tr>";
+                });
+
+                    //$("#div1").html("<h2><strong>sorry no trains bw these two stations!!!</strong></h2>");
+                //}else {
+                    $("#div1").html(data);
+             //   }
+                console.log("get function is working correctly");
+            });
+
+      }
+</script>
+
+
+<div id="div1" class="container"></div>
+
+</body>
+</html>

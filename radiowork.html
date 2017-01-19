@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="codebase/fonts/font_roboto/roboto.css"/>
+    <link rel="stylesheet" type="text/css" href="codebase/dhtmlxcalendar.css"/>
+    <script src="codebase/dhtmlxcalendar.js"></script>
+    <script src="dakepicker1.0.js"></script>
+    <script>
+        $(document).ready(function(k){
+            var date,month,year;
+            var d = new Date();
+            date = d.getDate();
+            if (date < 10) {
+                date = "0" + date;
+            }
+            month = d.getMonth() + 1;
+            if (month < 10) {
+                month = "0" + month;
+            }
+            year = d.getFullYear();
+            $("#today").click(function(){
+                // $(this).button('toggle');
+                console.log("today clicked :"+date+"-"+month+"-"+year);
+            });
+            $("#tomorrow").click(function(){
+                // $(this).button('toggle');
+                date=date+1;
+                console.log("tomorrow clicked"+date+"-"+month+"-"+year);
+            });
+            $("#calendaricon").click(function(){
+                // $(this).button('toggle');
+                console.log("calender clicked");
+            });
+
+
+
+        });
+    </script>
+</head>
+<body >
+<div class="container">
+    <h2>Button Group</h2>
+    <p>The .btn-group class creates a button group:</p>
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary" id="today">today</button>
+        <button type="button" class="btn btn-primary" id="tomorrow">tomorrow</button>
+        <button type="button" class="btn btn-primary" id="calendaricon" onload="doOnLoad()"><img src="codebase/calendar.png" border="0" height="20px" id="calendar_icon" ><span id="date_here">&nbsp;</span></button>
+    </div>
+</div>
+</body>
+</html>
